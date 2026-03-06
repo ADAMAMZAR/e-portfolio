@@ -1,8 +1,15 @@
 .card-container {
   aspect-ratio: 3 / 2;
-  perspective: 1000px;
+  perspective: 1200px;
   position: relative;
   width: 100%;
+}
+
+.card-container:hover .card-inner:not([aria-pressed="true"]) {
+  box-shadow:
+    0 0 0 1px rgba(168, 85, 247, 0.5),
+    0 0 30px rgba(168, 85, 247, 0.2),
+    0 0 60px rgba(236, 72, 153, 0.1);
 }
 
 .card-inner {
@@ -12,19 +19,23 @@
   transform-style: preserve-3d;
   width: 100%;
   will-change: transform;
+  border-radius: 1.1rem;
+  transition: box-shadow 0.35s ease;
 }
 
+/* ── Shared face ──────────────────────────────────────── */
 .card-face {
   backface-visibility: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 1rem;
+  border: 1px solid rgba(168, 85, 247, 0.18);
+  border-radius: 1.1rem;
   inset: 0;
   overflow: hidden;
   position: absolute;
 }
 
+/* ── Front ────────────────────────────────────────────── */
 .card-front {
-  background: #0b1120;
+  background: #0a0614;
 }
 
 .card-image {
@@ -40,106 +51,157 @@
 }
 
 .card-front-overlay {
-  background: linear-gradient(180deg, rgba(2, 6, 23, 0.1), rgba(2, 6, 23, 0.75));
+  background: linear-gradient(180deg, transparent 40%, rgba(8, 2, 18, 0.88) 100%);
   bottom: 0;
-  color: #f8fafc;
+  color: #f0f0ff;
   left: 0;
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   position: absolute;
   right: 0;
 }
 
 .card-front-overlay h3 {
-  font-size: 1rem;
+  font-size: 1.02rem;
+  font-weight: 700;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
+/* ── Badge ────────────────────────────────────────────── */
 .badge {
   border-radius: 999px;
   color: #fff;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   left: 0.75rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0.22rem 0.65rem;
   position: absolute;
   top: 0.75rem;
   z-index: 2;
+  text-transform: uppercase;
 }
 
 .badge-featured {
-  background: #4338ca;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
 }
 
+/* ── Back (glassmorphism) ─────────────────────────────── */
 .card-back {
-  background: linear-gradient(165deg, #111827, #1f2937);
-  color: #e2e8f0;
+  background: rgba(14, 6, 28, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+  color: #e8e0ff;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  justify-content: center;
-  padding: 1rem;
+  gap: 0.65rem;
+  justify-content: flex-start;
+  padding: 1.1rem;
   transform: rotateY(180deg);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(168, 85, 247, 0.4) transparent;
+}
+
+.card-back::-webkit-scrollbar {
+  width: 4px;
+}
+
+.card-back::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-back::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+  border-radius: 10px;
+}
+
+.card-back::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.6);
 }
 
 .card-back h3 {
-  font-size: 0.98rem;
+  font-size: 1rem;
+  font-weight: 700;
   margin: 0;
+  background: linear-gradient(90deg, #fff, #d8b4fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .card-back p {
-  font-size: 0.85rem;
-  line-height: 1.35;
+  font-size: 0.84rem;
+  line-height: 1.45;
   margin: 0;
+  color: #b0a0d0;
 }
 
+/* ── Tech Pills ───────────────────────────────────────── */
 .card-tech-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
+/* ── Action Buttons ───────────────────────────────────── */
 .card-actions {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.55rem;
+  margin-top: 0.1rem;
 }
 
 .action-btn {
-  background: #312e81;
-  border-radius: 0.6rem;
-  color: #f8fafc;
-  font-size: 0.8rem;
-  padding: 0.45rem 0.65rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.42rem 0.9rem;
   text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+  letter-spacing: 0.02em;
 }
 
 .action-btn:hover {
-  background: #4338ca;
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
+/* ── Confidential Lock ────────────────────────────────── */
 .card-lock {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  border-radius: 0.7rem;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 0.8rem;
   font-size: 0.8rem;
-  padding: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  color: #b0a0d0;
 }
 
+/* ── Skeleton ─────────────────────────────────────────── */
 .card-skeleton {
-  border-radius: 1rem;
+  border-radius: 1.1rem;
   inset: 0;
   overflow: hidden;
   position: absolute;
+  background: #0e0620;
 }
 
 .card-skeleton-shimmer {
-  animation: shimmer 1.5s linear infinite;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.2), transparent 70%);
+  animation: shimmer 1.6s linear infinite;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(168, 85, 247, 0.15) 50%,
+    transparent 70%
+  );
   height: 100%;
   transform: translateX(-100%);
   width: 100%;
 }
 
 @keyframes shimmer {
-  to {
-    transform: translateX(100%);
-  }
+  to { transform: translateX(100%); }
 }

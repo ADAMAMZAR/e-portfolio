@@ -1,9 +1,17 @@
 .tech-pill {
-  border: 1px solid;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.25);
   border-radius: 999px;
-  color: #f8fafc;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  padding: 0.2rem 0.55rem;
+  color: #c4b5fd;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.6rem;
   white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.tech-pill:hover {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.45);
 }
