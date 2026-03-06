@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from .auth import LoginRequest, TokenResponse, create_access_token, get_current_admin, verify_password
@@ -10,6 +10,9 @@ from .database import (
     restore_project,
     soft_delete_project,
     update_project,
+    upload_image,
+    get_unique_tech_stack,
+    reorder_projects,
 )
 from .models import Project, ProjectCreate, ProjectUpdate
 
@@ -31,6 +34,28 @@ app.add_middleware(
 @app.get("/api/health")
 def health() -> dict:
     return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Image Upload
+# ---------------------------------------------------------------------------
+
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
+MAX_SIZE_MB = 5
+
+@app.post("/api/upload-image")
+def upload_project_image(
+    file: UploadFile = File(...),
+    _: str = Depends(get_current_admin),
+) -> dict:
+    """Upload a project image to Supabase Storage. Returns { url }."""
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(400, f"Unsupported file type: {file.content_type}. Allowed: JPEG, PNG, WEBP, GIF, SVG")
+    data = file.file.read()
+    if len(data) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(400, f"File too large. Max size is {MAX_SIZE_MB} MB")
+    url = upload_image(file.filename or "upload", data, file.content_type)
+    return {"url": url}
 
 
 # ---------------------------------------------------------------------------
@@ -74,6 +99,9 @@ def create_new_project(
     body: ProjectCreate, _: str = Depends(get_current_admin)
 ) -> Project:
     data = body.model_dump(exclude_none=False)
+    # Automatically set order to the end of the list
+    existing = get_all_projects()
+    data["order"] = len(existing) 
     row = create_project(data)
     return Project(**row)
 
@@ -107,3 +135,18 @@ def restore_project_endpoint(
     """Restore a soft-deleted project: sets isActive=1."""
     row = restore_project(project_id)
     return Project(**row)
+
+
+@app.get("/api/tech-tags", response_model=List[str])
+def get_tech_tags(_: str = Depends(get_current_admin)) -> List[str]:
+    """Admin: returns a unique list of all tech stack items across all projects."""
+    return get_unique_tech_stack()
+
+
+@app.post("/api/projects/reorder")
+def reorder_projects_endpoint(
+    ordered_ids: List[str], _: str = Depends(get_current_admin)
+) -> dict:
+    """Admin: update project ordering in bulk."""
+    reorder_projects(ordered_ids)
+    return {"status": "success"}
