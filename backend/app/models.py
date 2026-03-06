@@ -18,8 +18,8 @@ class Project(BaseModel):
     title: str = Field(max_length=60)
     shortDescription: str = Field(max_length=140)
     description: str
-    techStack: List[str] = Field(max_length=8)
-    imageUrl: str
+    techStack: List[str]
+    imageUrls: List[str]
     placeholderColor: str
     demoLink: Optional[str] = None
     repoLink: Optional[str] = None
@@ -35,8 +35,8 @@ class ProjectCreate(BaseModel):
     title: str = Field(max_length=60)
     shortDescription: str = Field(max_length=140)
     description: str
-    techStack: List[str] = Field(max_length=8)
-    imageUrl: str
+    techStack: List[str]
+    imageUrls: List[str] = Field(default_factory=list)
     placeholderColor: str = "#1e293b"
     demoLink: Optional[str] = None
     repoLink: Optional[str] = None
@@ -44,7 +44,6 @@ class ProjectCreate(BaseModel):
     isConfidential: bool = False
     category: Category = Category.other
     year: int = Field(ge=2000, le=2100)
-    order: int = Field(ge=0, default=0)
     isActive: int = Field(default=1)
 
 
@@ -52,8 +51,8 @@ class ProjectUpdate(BaseModel):
     title: Optional[str] = Field(default=None, max_length=60)
     shortDescription: Optional[str] = Field(default=None, max_length=140)
     description: Optional[str] = None
-    techStack: Optional[List[str]] = Field(default=None, max_length=8)
-    imageUrl: Optional[str] = None
+    techStack: Optional[List[str]] = None
+    imageUrls: Optional[List[str]] = None
     placeholderColor: Optional[str] = None
     demoLink: Optional[str] = None
     repoLink: Optional[str] = None
@@ -61,5 +60,4 @@ class ProjectUpdate(BaseModel):
     isConfidential: Optional[bool] = None
     category: Optional[Category] = None
     year: Optional[int] = Field(default=None, ge=2000, le=2100)
-    order: Optional[int] = Field(default=None, ge=0)
     isActive: Optional[int] = None
