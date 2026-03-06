@@ -1,0 +1,145 @@
+.card-container {
+  aspect-ratio: 3 / 2;
+  perspective: 1000px;
+  position: relative;
+  width: 100%;
+}
+
+.card-inner {
+  cursor: pointer;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  width: 100%;
+  will-change: transform;
+}
+
+.card-face {
+  backface-visibility: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1rem;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.card-front {
+  background: #0b1120;
+}
+
+.card-image {
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 400ms ease-out;
+  width: 100%;
+}
+
+.card-image.is-visible {
+  opacity: 1;
+}
+
+.card-front-overlay {
+  background: linear-gradient(180deg, rgba(2, 6, 23, 0.1), rgba(2, 6, 23, 0.75));
+  bottom: 0;
+  color: #f8fafc;
+  left: 0;
+  padding: 1rem;
+  position: absolute;
+  right: 0;
+}
+
+.card-front-overlay h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.badge {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.72rem;
+  left: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  position: absolute;
+  top: 0.75rem;
+  z-index: 2;
+}
+
+.badge-featured {
+  background: #4338ca;
+}
+
+.card-back {
+  background: linear-gradient(165deg, #111827, #1f2937);
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  justify-content: center;
+  padding: 1rem;
+  transform: rotateY(180deg);
+}
+
+.card-back h3 {
+  font-size: 0.98rem;
+  margin: 0;
+}
+
+.card-back p {
+  font-size: 0.85rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.card-tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.action-btn {
+  background: #312e81;
+  border-radius: 0.6rem;
+  color: #f8fafc;
+  font-size: 0.8rem;
+  padding: 0.45rem 0.65rem;
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  background: #4338ca;
+}
+
+.card-lock {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0.7rem;
+  font-size: 0.8rem;
+  padding: 0.6rem;
+}
+
+.card-skeleton {
+  border-radius: 1rem;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.card-skeleton-shimmer {
+  animation: shimmer 1.5s linear infinite;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.2), transparent 70%);
+  height: 100%;
+  transform: translateX(-100%);
+  width: 100%;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}

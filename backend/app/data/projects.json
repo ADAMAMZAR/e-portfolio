@@ -1,0 +1,50 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "title": "Real-Time Collaboration Engine",
+    "shortDescription": "WebSocket-powered doc editor supporting 50+ concurrent users.",
+    "description": "A full-stack real-time document editor with conflict resolution and low-latency updates.",
+    "techStack": ["React", "Node.js", "Socket.IO", "Redis", "PostgreSQL"],
+    "imageUrl": "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1600&q=80",
+    "placeholderColor": "#1e293b",
+    "demoLink": "https://example.com/demo/collab",
+    "repoLink": "https://github.com/example/collab-engine",
+    "featured": true,
+    "isConfidential": false,
+    "category": "fullstack",
+    "year": 2025,
+    "order": 1
+  },
+  {
+    "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+    "title": "Portfolio AI Assistant",
+    "shortDescription": "Context-aware assistant that answers recruiter questions from project metadata.",
+    "description": "A backend-centric NLP assistant integrated into the portfolio for interactive Q&A.",
+    "techStack": ["FastAPI", "Python", "OpenAI", "Redis"],
+    "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80",
+    "placeholderColor": "#0f172a",
+    "demoLink": null,
+    "repoLink": null,
+    "featured": true,
+    "isConfidential": true,
+    "category": "backend",
+    "year": 2026,
+    "order": 2
+  },
+  {
+    "id": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+    "title": "Design System Dashboard",
+    "shortDescription": "Interactive component catalog with visual regression checks and usage metrics.",
+    "description": "Frontend-focused dashboard for component governance, theming, and accessibility checks.",
+    "techStack": ["React", "TypeScript", "Framer Motion", "TailwindCSS"],
+    "imageUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1600&q=80",
+    "placeholderColor": "#1f2937",
+    "demoLink": "https://example.com/demo/design-system",
+    "repoLink": "https://github.com/example/design-system-dashboard",
+    "featured": false,
+    "isConfidential": false,
+    "category": "frontend",
+    "year": 2024,
+    "order": 3
+  }
+]
