@@ -58,9 +58,10 @@ export function Portfolio() {
       </div>
 
       <header className="portfolio-header">
-        <p className="eyebrow">Dynamic 3D Flip Card Portfolio</p>
-        <h1>Engineering work, organized for fast recruiter review.</h1>
-        <p className="subtitle">Filter by stack, flip each project for implementation details, and jump to demos or repos in one click.</p>
+        <img src="/icon.png" alt="Adam Amzar" className="brand-logo" />
+        <p className="eyebrow">Adam Amzar | Full Stack AI Engineer</p>
+        <h1>Building intelligent, scalable AI solutions.</h1>
+        <p className="subtitle">From LLM-powered applications to high-performance backends, I engineer systems that bridge the gap between AI research and production-ready products.</p>
       </header>
 
       {state.status === "error" ? <p className="error-banner">Failed to load projects: {state.message}</p> : null}

@@ -117,6 +117,16 @@ body::after {
 }
 
 /* ── Header ───────────────────────────────────────────── */
+.brand-logo {
+  height: 48px;
+  width: 48px;
+  border-radius: 10px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  display: block;
+}
+
 .portfolio-header {
   margin-bottom: 1.8rem;
 }
