@@ -1,32 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import "./ImageCarousel.css";
 
-type Props = {
-  images: string[];
-  alt: string;
-  loaded: boolean;
-  onImageLoad: () => void;
-};
-
-export function ImageCarousel({ images, alt, loaded, onImageLoad }: Props) {
+export function ImageCarousel({ images, alt, loaded, onImageLoad }) {
   const allImages = (images && images.length > 0) ? images : [];
   const single = allImages.length <= 1;
 
   const [index, setIndex] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef(null);
   const [hovered, setHovered] = useState(false);
 
-  function prev(e: React.MouseEvent) {
+  function prev(e) {
     e.stopPropagation();
     setIndex((i) => (i - 1 + allImages.length) % allImages.length);
   }
 
-  function next(e: React.MouseEvent) {
+  function next(e) {
     e.stopPropagation();
     setIndex((i) => (i + 1) % allImages.length);
   }
 
-  function goTo(e: React.MouseEvent, i: number) {
+  function goTo(e, i) {
     e.stopPropagation();
     setIndex(i);
   }

@@ -1,8 +1,8 @@
-import { useCallback, useRef, type MouseEvent } from "react";
+import { useCallback, useRef } from "react";
 import { useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 export function useMagneticTilt(strength = 15) {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   const x = useMotionValue(0);
@@ -11,7 +11,7 @@ export function useMagneticTilt(strength = 15) {
   const rotateY = useSpring(x, { stiffness: 300, damping: 30 });
 
   const onMouseMove = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event) => {
       if (prefersReducedMotion) return;
       const rect = ref.current?.getBoundingClientRect();
       if (!rect) return;
@@ -34,4 +34,3 @@ export function useMagneticTilt(strength = 15) {
 
   return { ref, rotateX, rotateY, onMouseMove, onMouseLeave, prefersReducedMotion };
 }
-

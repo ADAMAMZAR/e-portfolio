@@ -1,13 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 
-interface AuthContextValue {
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-  isAdmin: boolean;
-}
-
-const AuthContext = createContext<AuthContextValue>({
+const AuthContext = createContext({
   token: null,
   login: () => {},
   logout: () => {},
@@ -16,12 +9,12 @@ const AuthContext = createContext<AuthContextValue>({
 
 const TOKEN_KEY = "admin_token";
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
+export function AuthProvider({ children }) {
+  const [token, setToken] = useState(() => {
     return localStorage.getItem(TOKEN_KEY);
   });
 
-  const login = (t: string) => {
+  const login = (t) => {
     localStorage.setItem(TOKEN_KEY, t);
     setToken(t);
   };

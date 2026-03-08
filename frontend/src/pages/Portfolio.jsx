@@ -4,16 +4,11 @@ import { ProjectGrid } from "../components/ProjectGrid/ProjectGrid";
 import { LoginModal } from "../components/LoginModal/LoginModal";
 import { useProjectFilter } from "../hooks/useProjectFilter";
 import { useAuth } from "../context/AuthContext";
-import { projectsSchema, type Project } from "../types/project";
+import { projectsSchema } from "../types/project";
 import { sortProjects } from "../utils/sortProjects";
 
-type ApiState =
-  | { status: "loading" }
-  | { status: "ready"; projects: Project[] }
-  | { status: "error"; message: string };
-
 export function Portfolio() {
-  const [state, setState] = useState<ApiState>({ status: "loading" });
+  const [state, setState] = useState({ status: "loading" });
   const [showLogin, setShowLogin] = useState(false);
   const { isAdmin, logout } = useAuth();
 

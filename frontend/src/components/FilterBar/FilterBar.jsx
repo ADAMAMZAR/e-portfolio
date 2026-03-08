@@ -1,10 +1,4 @@
-type FilterBarProps = {
-  tags: string[];
-  activeTag: string;
-  onChange: (tag: string) => void;
-};
-
-export function FilterBar({ tags, activeTag, onChange }: FilterBarProps) {
+export function FilterBar({ tags, activeTag, onChange }) {
   return (
     <div className="filter-bar" role="toolbar" aria-label="Project technology filters">
       {tags.map((tag) => {

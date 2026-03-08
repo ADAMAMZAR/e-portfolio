@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
 
-import type { Project } from "../types/project";
-
-export function useProjectFilter(projects: Project[]) {
-  const [activeTag, setActiveTag] = useState<string>("All");
+export function useProjectFilter(projects) {
+  const [activeTag, setActiveTag] = useState("All");
 
   const tags = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set();
     projects.forEach((project) => {
       project.techStack.forEach((tech) => set.add(tech));
     });

@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../utils/api";
-import { type Project } from "../types/project";
 import { Reorder } from "framer-motion";
 import "./AdminPanel.css";
 
-const CATEGORIES = ["fullstack", "frontend", "backend", "ml", "other"] as const;
+const CATEGORIES = ["fullstack", "frontend", "backend", "ml", "other"];
 
-type ProjectForm = Omit<Project, "id" | "isActive" | "order">;
-const EMPTY_FORM: ProjectForm = {
+const EMPTY_FORM = {
   title: "",
   shortDescription: "",
   description: "",
@@ -25,22 +23,22 @@ const EMPTY_FORM: ProjectForm = {
 
 export function AdminPanel() {
   const { logout } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [techSuggestions, setTechSuggestions] = useState<string[]>([]);
+  const [error, setError] = useState(null);
+  const [techSuggestions, setTechSuggestions] = useState([]);
   const [newTag, setNewTag] = useState("");
 
   // Modal state
   const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<ProjectForm>(EMPTY_FORM);
+  const [editId, setEditId] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formError, setFormError] = useState(null);
 
   // ----- Image upload -----
-  async function handleImageFile(file: File) {
+  async function handleImageFile(file) {
     setUploading(true);
     setFormError(null);
     try {
@@ -69,7 +67,7 @@ export function AdminPanel() {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.get<Project[]>("/projects/all");
+      const data = await api.get("/projects/all");
       setProjects(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load projects");
@@ -80,7 +78,7 @@ export function AdminPanel() {
 
   async function loadTechSuggestions() {
     try {
-      const data = await api.get<string[]>("/tech-tags");
+      const data = await api.get("/tech-tags");
       setTechSuggestions(data);
     } catch (e) {
       console.error("Failed to load tech tags", e);
@@ -100,7 +98,7 @@ export function AdminPanel() {
     setShowForm(true);
   }
 
-  function openEdit(p: Project) {
+  function openEdit(p) {
     setEditId(p.id);
     setForm({
       title: p.title,
@@ -120,15 +118,15 @@ export function AdminPanel() {
     setShowForm(true);
   }
 
-  async function handleFormSubmit(e: React.FormEvent) {
+  async function handleFormSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     setFormError(null);
     try {
       if (editId) {
-        await api.put<Project>(`/projects/${editId}`, form);
+        await api.put(`/projects/${editId}`, form);
       } else {
-        await api.post<Project>("/projects", { ...form, isActive: 1 });
+        await api.post("/projects", { ...form, isActive: 1 });
       }
       setShowForm(false);
       await loadProjects();
@@ -139,18 +137,18 @@ export function AdminPanel() {
     }
   }
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id) {
     if (!confirm("Soft-delete this project? It won't appear on the public portfolio.")) return;
-    await api.delete<Project>(`/projects/${id}`);
+    await api.delete(`/projects/${id}`);
     await loadProjects();
   }
 
-  async function handleRestore(id: string) {
-    await api.patch<Project>(`/projects/${id}/restore`);
+  async function handleRestore(id) {
+    await api.patch(`/projects/${id}/restore`);
     await loadProjects();
   }
 
-  async function handleReorder(newOrder: Project[]) {
+  async function handleReorder(newOrder) {
     // Optimistic update
     setProjects(newOrder);
     try {
@@ -162,10 +160,10 @@ export function AdminPanel() {
   }
 
   // ----- Field helpers -----
-  const set = (field: keyof ProjectForm, value: unknown) =>
+  const set = (field, value) =>
     setForm((f) => ({ ...f, [field]: value }));
 
-  function handleAddTag(tag: string) {
+  function handleAddTag(tag) {
     const trimmed = tag.trim();
     if (trimmed && !form.techStack.includes(trimmed)) {
       set("techStack", [...form.techStack, trimmed]);
@@ -177,11 +175,11 @@ export function AdminPanel() {
     }
   }
 
-  function handleRemoveTag(tag: string) {
+  function handleRemoveTag(tag) {
     set("techStack", form.techStack.filter(t => t !== tag));
   }
 
-  function handleRemoveImage(url: string) {
+  function handleRemoveImage(url) {
     set("imageUrls", form.imageUrls.filter(u => u !== url));
   }
 

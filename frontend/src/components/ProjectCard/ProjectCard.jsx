@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-
-import type { Project } from "../../types/project";
 import { useMagneticTilt } from "../../hooks/useMagneticTilt";
 import { CardFront } from "./CardFront";
 import { CardBack } from "./CardBack";
 import { SkeletonCard } from "./SkeletonCard";
 import "./ProjectCard.css";
 
-type ProjectCardProps = {
-  project: Project;
-};
-
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const { ref, rotateX, rotateY, onMouseMove, onMouseLeave, prefersReducedMotion } = useMagneticTilt(15);

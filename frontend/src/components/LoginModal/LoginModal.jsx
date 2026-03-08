@@ -3,17 +3,13 @@ import { useAuth } from "../../context/AuthContext";
 import { loginApi } from "../../utils/api";
 import "./LoginModal.css";
 
-interface Props {
-  onClose: () => void;
-}
-
-export function LoginModal({ onClose }: Props) {
+export function LoginModal({ onClose }) {
   const { login } = useAuth();
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setLoading(true);

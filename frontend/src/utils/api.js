@@ -1,21 +1,21 @@
 /**
- * Typed API helpers that automatically attach the JWT Bearer token.
+ * API helpers that automatically attach the JWT Bearer token.
  */
 
 const BASE = "/api";
 
-function getToken(): string | null {
+function getToken() {
   return localStorage.getItem("admin_token");
 }
 
-function authHeaders(): HeadersInit {
+function authHeaders() {
   const token = getToken();
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+async function request(method, path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers: authHeaders(),
@@ -25,18 +25,18 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail ?? "Request failed");
   }
-  return res.json() as Promise<T>;
+  return res.json();
 }
 
 export const api = {
-  get: <T>(path: string) => request<T>("GET", path),
-  post: <T>(path: string, body: unknown) => request<T>("POST", path, body),
-  put: <T>(path: string, body: unknown) => request<T>("PUT", path, body),
-  patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body),
-  delete: <T>(path: string) => request<T>("DELETE", path),
+  get: (path) => request("GET", path),
+  post: (path, body) => request("POST", path, body),
+  put: (path, body) => request("PUT", path, body),
+  patch: (path, body) => request("PATCH", path, body),
+  delete: (path) => request("DELETE", path),
 };
 
-export async function loginApi(password: string): Promise<string> {
+export async function loginApi(password) {
   const res = await fetch(`${BASE}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -47,5 +47,5 @@ export async function loginApi(password: string): Promise<string> {
     throw new Error(err.detail ?? "Login failed");
   }
   const data = await res.json();
-  return data.access_token as string;
+  return data.access_token;
 }

@@ -1,13 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-
-import type { Project } from "../../types/project";
 import { ProjectCard } from "../ProjectCard/ProjectCard";
 
-type ProjectGridProps = {
-  projects: Project[];
-};
-
-export function ProjectGrid({ projects }: ProjectGridProps) {
+export function ProjectGrid({ projects }) {
   return (
     <div className="project-grid" aria-live="polite">
       <AnimatePresence mode="popLayout">

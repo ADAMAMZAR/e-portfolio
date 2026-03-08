@@ -1,10 +1,6 @@
 import "./TechPill.css";
 
-type TechPillProps = {
-  label: string;
-};
-
-function hashColor(input: string): string {
+function hashColor(input) {
   let hash = 0;
   for (let i = 0; i < input.length; i += 1) {
     hash = input.charCodeAt(i) + ((hash << 5) - hash);
@@ -13,7 +9,7 @@ function hashColor(input: string): string {
   return `hsl(${hue} 75% 45%)`;
 }
 
-export function TechPill({ label }: TechPillProps) {
+export function TechPill({ label }) {
   return (
     <span className="tech-pill" style={{ borderColor: hashColor(label) }}>
       {label}

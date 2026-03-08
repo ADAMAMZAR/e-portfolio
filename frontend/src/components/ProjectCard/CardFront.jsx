@@ -1,13 +1,6 @@
-import type { Project } from "../../types/project";
 import { ImageCarousel } from "./ImageCarousel";
 
-type CardFrontProps = {
-  project: Project;
-  loaded: boolean;
-  onImageLoad: () => void;
-};
-
-export function CardFront({ project, loaded, onImageLoad }: CardFrontProps) {
+export function CardFront({ project, loaded, onImageLoad }) {
   return (
     <div className="card-face card-front">
       {!loaded ? null : project.featured ? (

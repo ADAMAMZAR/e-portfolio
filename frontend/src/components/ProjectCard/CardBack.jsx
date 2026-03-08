@@ -1,11 +1,6 @@
-import type { Project } from "../../types/project";
 import { TechPill } from "../TechPill/TechPill";
 
-type CardBackProps = {
-  project: Project;
-};
-
-export function CardBack({ project }: CardBackProps) {
+export function CardBack({ project }) {
   return (
     <div className="card-face card-back">
       <h3>{project.title}</h3>

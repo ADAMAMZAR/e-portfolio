@@ -21,5 +21,3 @@ export const projectSchema = z.object({
 });
 
 export const projectsSchema = z.array(projectSchema);
-
-export type Project = z.infer<typeof projectSchema>;
