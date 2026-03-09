@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Portfolio } from "./pages/Portfolio";
 import { AdminPanel } from "./pages/AdminPanel";
+import { CommandBar } from "./components/CommandBar/CommandBar";
 
 function Router() {
   const { isAdmin } = useAuth();
@@ -21,6 +22,7 @@ function Router() {
 export function App() {
   return (
     <AuthProvider>
+      <CommandBar />
       <Router />
     </AuthProvider>
   );

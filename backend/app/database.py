@@ -134,6 +134,41 @@ def reorder_projects(ordered_ids: List[str]) -> None:
     """Update the 'order' field for all given projects. 
     Uses individual updates to avoid overwriting or null-violation errors if bulk upsert is misused.
     """
-    client = get_client()
     for idx, pid in enumerate(ordered_ids):
         client.table(TABLE).update({"order": idx}).eq("id", pid).execute()
+
+
+# ---------------------------------------------------------------------------
+# AI Cache
+# ---------------------------------------------------------------------------
+
+CACHE_TABLE = "ai_cache"
+
+def get_cached_response(query_hash: str) -> Optional[str]:
+    """Retrieve a cached AI response by query hash. Handles missing table gracefully."""
+    try:
+        resp = (
+            get_client()
+            .table(CACHE_TABLE)
+            .select("response")
+            .eq("query_hash", query_hash)
+            .execute()
+        )
+        if resp.data:
+            return resp.data[0]["response"]
+    except Exception as e:
+        # If table doesn't exist, we just skip caching
+        print(f"Cache lookup skipped (table might be missing): {e}")
+    return None
+
+def save_cache_response(query: str, query_hash: str, response: str) -> None:
+    """Save an AI response to the cache. Handles missing table gracefully."""
+    try:
+        data = {
+            "query": query,
+            "query_hash": query_hash,
+            "response": response
+        }
+        get_client().table(CACHE_TABLE).insert(data).execute()
+    except Exception as e:
+        print(f"Cache save skipped (table might be missing): {e}")

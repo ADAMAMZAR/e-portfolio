@@ -51,13 +51,19 @@
 }
 
 .card-front-overlay {
-  background: linear-gradient(180deg, transparent 40%, rgba(8, 2, 18, 0.88) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    transparent 100%
+  );
   bottom: 0;
-  color: #f0f0ff;
+  color: #ffffff;
   left: 0;
-  padding: 0.9rem 1rem;
+  padding: 1.5rem 1rem 0.8rem;
   position: absolute;
   right: 0;
+  z-index: 1;
 }
 
 .card-front-overlay h3 {

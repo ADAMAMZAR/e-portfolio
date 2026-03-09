@@ -15,6 +15,7 @@ from .database import (
     reorder_projects,
 )
 from .models import Project, ProjectCreate, ProjectUpdate
+from .ai_service import get_ai_response
 
 app = FastAPI(title="E-Portfolio API", version="2.0.0")
 
@@ -150,3 +151,65 @@ def reorder_projects_endpoint(
     """Admin: update project ordering in bulk."""
     reorder_projects(ordered_ids)
     return {"status": "success"}
+from fastapi import Request
+from datetime import datetime, date
+
+# Simple in-memory rate limiting: { ip: { count: int, last_reset: date } }
+AI_RATE_LIMIT = 5
+ai_query_counts = {}
+
+def check_rate_limit(request: Request) -> int:
+    ip = request.client.host
+    today = date.today()
+    
+    if ip not in ai_query_counts or ai_query_counts[ip]["last_reset"] != today:
+        ai_query_counts[ip] = {"count": 0, "last_reset": today}
+    
+    return AI_RATE_LIMIT - ai_query_counts[ip]["count"]
+
+def increment_rate_limit(request: Request):
+    ip = request.client.host
+    ai_query_counts[ip]["count"] += 1
+
+# ---------------------------------------------------------------------------
+# AI Query
+# ---------------------------------------------------------------------------
+
+@app.get("/api/ai/limit")
+def get_ai_limit(request: Request) -> dict:
+    """Returns the remaining query count for the user."""
+    remaining = check_rate_limit(request)
+    return {"remaining": max(0, remaining), "limit": AI_RATE_LIMIT}
+
+@app.post("/api/ai/query")
+def ai_query(request: Request, body: dict) -> dict:
+    """Public AI query endpoint with rate limiting."""
+    remaining = check_rate_limit(request)
+    if remaining <= 0:
+        raise HTTPException(
+            status_code=429, 
+            detail="Daily AI query limit reached. Please come back tomorrow!"
+        )
+    
+    user_query = body.get("query")
+    if not user_query:
+        raise HTTPException(400, "Query is required")
+    
+    if len(user_query) > 300:
+        raise HTTPException(400, "Query too long. Max 300 characters.")
+    
+    # Fetch projects for context
+    projects = get_active_projects()
+    context_str = ""
+    for p in projects:
+        context_str += f"- Title: {p['title']}\n  Description: {p['shortDescription']}\n  Tech: {', '.join(p['techStack'])}\n\n"
+    
+    response = get_ai_response(user_query, context_str)
+    
+    # Increment after successful response
+    increment_rate_limit(request)
+    
+    return {
+        "response": response, 
+        "remaining": max(0, remaining - 1)
+    }

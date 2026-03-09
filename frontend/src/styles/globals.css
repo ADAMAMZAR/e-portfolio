@@ -78,6 +78,57 @@ body::after {
   align-items: center;
 }
 
+.social-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  white-space: nowrap;
+}
+
+.social-icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  color: white;
+}
+
+.social-btn.linkedin:hover {
+  background: #0077b5;
+  border-color: #0077b5;
+  box-shadow: 0 10px 20px rgba(10, 102, 194, 0.3);
+}
+
+.social-btn.whatsapp:hover {
+  background: #25d366;
+  border-color: #25d366;
+  box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+}
+
+.social-btn.gmail:hover {
+  background: #ea4335;
+  border-color: #ea4335;
+  box-shadow: 0 10px 20px rgba(234, 67, 53, 0.3);
+}
+
 .login-btn,
 .admin-link,
 .logout-btn {
@@ -116,32 +167,57 @@ body::after {
   transform: translateY(-1px);
 }
 
-/* ── Header ───────────────────────────────────────────── */
-.brand-logo {
-  height: 48px;
-  width: 48px;
-  border-radius: 10px;
-  margin-bottom: 1.2rem;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  display: block;
+/* ───── Portfolio Header ───── */
+.portfolio-header {
+  padding: 6rem 0 4rem;
+  margin-bottom: 2rem;
 }
 
-.portfolio-header {
-  margin-bottom: 1.8rem;
+.header-container {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Header Image */
+.header-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.image-border-glow {
+  position: relative;
+  width: 240px;
+  height: 280px;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(236, 72, 153, 0.5));
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4));
 }
 
 .eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #a855f7;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin: 0 0 0.75rem;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  display: inline-block;
 }
 
 .portfolio-header h1 {

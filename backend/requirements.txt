@@ -4,3 +4,4 @@ supabase
 python-dotenv
 passlib[argon2]
 python-multipart
+google-generativeai
