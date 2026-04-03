@@ -28,6 +28,12 @@ export function AdminPanel() {
   const [error, setError] = useState(null);
   const [techSuggestions, setTechSuggestions] = useState([]);
   const [newTag, setNewTag] = useState("");
+  const [activeTab, setActiveTab] = useState("projects"); // "projects" or "profile"
+
+  // Profile state
+  const [profile, setProfile] = useState(null);
+  const [profileForm, setProfileForm] = useState(null);
+  const [profileSubmitting, setProfileSubmitting] = useState(false);
 
   // Modal state
   const [showForm, setShowForm] = useState(false);
@@ -63,6 +69,27 @@ export function AdminPanel() {
     }
   }
 
+  async function handleProfileImageUpload(file) {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      setProfileForm(f => ({ ...f, image_url: url }));
+    } catch (err) {
+      alert("Profile image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function loadProjects() {
     setLoading(true);
     setError(null);
@@ -85,10 +112,35 @@ export function AdminPanel() {
     }
   }
 
+  async function loadProfile() {
+    try {
+      const data = await fetch("/api/profile").then(res => res.json());
+      setProfile(data);
+      setProfileForm(data);
+    } catch (e) {
+      console.error("Failed to load profile", e);
+    }
+  }
+
   useEffect(() => {
     loadProjects();
     loadTechSuggestions();
+    loadProfile();
   }, []);
+
+  async function handleProfileSubmit(e) {
+    e.preventDefault();
+    setProfileSubmitting(true);
+    try {
+      await api.put("/profile", profileForm);
+      setProfile(profileForm);
+      alert("Profile updated successfully!");
+    } catch (err) {
+      alert("Failed to update profile: " + (err instanceof Error ? err.message : "Unknown error"));
+    } finally {
+      setProfileSubmitting(false);
+    }
+  }
 
   // ----- Form helpers -----
   function openAdd() {
@@ -192,17 +244,33 @@ export function AdminPanel() {
           <h1 className="admin-title">Admin Panel</h1>
         </div>
         <div className="admin-header-right">
-          <button className="btn-add" onClick={openAdd}>+ Add Project</button>
+          <div className="admin-tabs">
+            <button 
+              className={`tab-btn ${activeTab === "projects" ? "active" : ""}`} 
+              onClick={() => setActiveTab("projects")}
+            >
+              Projects
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === "profile" ? "active" : ""}`} 
+              onClick={() => setActiveTab("profile")}
+            >
+              Profile
+            </button>
+          </div>
+          {activeTab === "projects" && (
+            <button className="btn-add" onClick={openAdd}>+ Add Project</button>
+          )}
           <button className="btn-logout" onClick={logout}>Logout</button>
         </div>
       </header>
 
       {/* Content */}
       <main className="admin-main">
-        {loading && <p className="admin-status">Loading projects…</p>}
+        {loading && <p className="admin-status">Loading…</p>}
         {error && <p className="admin-error">{error}</p>}
 
-        {!loading && !error && (
+        {!loading && !error && activeTab === "projects" && (
           <div className="project-table-wrap">
             <table className="project-table">
               <thead>
@@ -258,6 +326,180 @@ export function AdminPanel() {
                 ))}
               </Reorder.Group>
             </table>
+          </div>
+        )}
+
+        {!loading && !error && activeTab === "profile" && profileForm && (
+          <div className="profile-editor-wrap">
+            <h2 className="section-title">Edit Portfolio Profile</h2>
+            <form onSubmit={handleProfileSubmit} className="admin-form profile-form">
+              <div className="form-grid-2">
+                <div className="form-row">
+                  <label>Name</label>
+                  <input 
+                    value={profileForm.name} 
+                    onChange={e => setProfileForm({...profileForm, name: e.target.value})} 
+                  />
+                </div>
+                <div className="form-row">
+                  <label>Eyebrow Text</label>
+                  <input 
+                    value={profileForm.eyebrow} 
+                    onChange={e => setProfileForm({...profileForm, eyebrow: e.target.value})} 
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <label>Main Title</label>
+                <input 
+                  value={profileForm.title} 
+                  onChange={e => setProfileForm({...profileForm, title: e.target.value})} 
+                />
+              </div>
+
+              <div className="form-row">
+                <label>Subtitle / Bio</label>
+                <textarea 
+                  value={profileForm.subtitle} 
+                  onChange={e => setProfileForm({...profileForm, subtitle: e.target.value})} 
+                  rows={4}
+                />
+              </div>
+
+              <div className="form-row">
+                <label>Profile Image</label>
+                <div className="image-management-area">
+                  <div className="profile-tuning-layout">
+                    {profileForm.image_url && (
+                      <div className="tuning-preview-section">
+                        <label className="sub-label">Live Preview</label>
+                        <div className="tuning-preview-frame">
+                          <img 
+                            src={profileForm.image_url} 
+                            alt="Profile Preview" 
+                            style={{
+                              objectPosition: `${profileForm.image_x ?? 50}% ${profileForm.image_y ?? 50}%`,
+                              transform: `scale(${profileForm.image_zoom ?? 1})`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="tuning-controls-section">
+                      <div className="image-upload-area"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleProfileImageUpload(f); }}
+                      >
+                        <label className="image-drop-label" htmlFor="profile-img-input">
+                          {uploading ? (
+                            <span className="upload-spinner">⏳ Uploading…</span>
+                          ) : (
+                            <>
+                              <span className="upload-icon">🖼️</span>
+                              <span>{profileForm.image_url ? "Change image" : "Upload image"}</span>
+                            </>
+                          )}
+                        </label>
+                        <input
+                          id="profile-img-input"
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) handleProfileImageUpload(f);
+                          }}
+                        />
+                      </div>
+
+                      {profileForm.image_url && (
+                        <div className="image-tuning-sliders">
+                          <div className="slider-row">
+                            <div className="slider-info">
+                              <label>Zoom</label>
+                              <span>{profileForm.image_zoom?.toFixed(1) || "1.0"}x</span>
+                            </div>
+                            <input 
+                              type="range" min="1" max="3" step="0.1" 
+                              value={profileForm.image_zoom || 1} 
+                              onChange={e => setProfileForm({...profileForm, image_zoom: parseFloat(e.target.value)})}
+                            />
+                          </div>
+                          
+                          <div className="slider-row">
+                            <div className="slider-info">
+                              <label>Horizontal Position</label>
+                              <span>{Math.round(profileForm.image_x) || "50"}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="1" 
+                              value={profileForm.image_x || 50} 
+                              onChange={e => setProfileForm({...profileForm, image_x: parseInt(e.target.value)})}
+                            />
+                          </div>
+
+                          <div className="slider-row">
+                            <div className="slider-info">
+                              <label>Vertical Position</label>
+                              <span>{Math.round(profileForm.image_y) || "50"}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="1" 
+                              value={profileForm.image_y || 50} 
+                              onChange={e => setProfileForm({...profileForm, image_y: parseInt(e.target.value)})}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="sub-section-title">Social Links</h3>
+              <div className="form-grid-3">
+                {["linkedin", "whatsapp", "gmail"].map(key => (
+                  <div key={key} className="form-row social-mgr-row">
+                    <label>{key.charAt(0).toUpperCase() + key.slice(1)} {key === "gmail" ? "Email" : "URL"}</label>
+                    <input 
+                      value={profileForm.socials[key]?.url || ""} 
+                      onChange={e => setProfileForm({
+                        ...profileForm, 
+                        socials: {
+                          ...profileForm.socials, 
+                          [key]: { ...profileForm.socials[key], url: e.target.value }
+                        }
+                      })} 
+                      placeholder={key === "gmail" ? "example@gmail.com" : "https://..."}
+                    />
+                    <div className="toggle-container">
+                      <span className="toggle-label">Status: </span>
+                      <button 
+                        type="button"
+                        className={`toggle-text-btn ${profileForm.socials[key]?.enabled ? "enabled" : "disabled"}`}
+                        onClick={() => setProfileForm({
+                          ...profileForm,
+                          socials: {
+                            ...profileForm.socials,
+                            [key]: { ...profileForm.socials[key], enabled: !profileForm.socials[key]?.enabled }
+                          }
+                        })}
+                      >
+                        {profileForm.socials[key]?.enabled ? "Enabled" : "Disabled"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="btn-save" disabled={profileSubmitting || uploading}>
+                  {profileSubmitting ? "Saving..." : uploading ? "Uploading..." : "Update Profile"}
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </main>

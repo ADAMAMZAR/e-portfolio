@@ -172,3 +172,56 @@ def save_cache_response(query: str, query_hash: str, response: str) -> None:
         get_client().table(CACHE_TABLE).insert(data).execute()
     except Exception as e:
         print(f"Cache save skipped (table might be missing): {e}")
+
+# ---------------------------------------------------------------------------
+# Profile / Settings
+# ---------------------------------------------------------------------------
+
+PROFILE_TABLE = "profile"
+
+def get_profile_data() -> Dict[str, Any]:
+    """Fetch profile data from Supabase or return defaults if missing."""
+    default_profile = {
+        "name": "Adam Amzar",
+        "eyebrow": "Adam Amzar | Full Stack AI Engineer",
+        "title": "Building intelligent, scalable AI solutions.",
+        "subtitle": "From LLM-powered applications to high-performance backends, I engineer systems that bridge the gap between AI research and production-ready products.",
+        "image_url": "/profile.jpg",
+        "image_zoom": 1.0,
+        "image_x": 50.0,
+        "image_y": 50.0,
+        "socials": {
+            "linkedin": {"url": "https://www.linkedin.com/in/adamamzar/", "enabled": True},
+            "whatsapp": {"url": "https://wa.me/+60197920048", "enabled": True},
+            "gmail": {"url": "adamnajmin15@gmail.com", "enabled": True}
+        }
+    }
+    
+    try:
+        resp = get_client().table(PROFILE_TABLE).select("*").single().execute()
+        if resp.data:
+            # Merge with defaults to ensure all keys exist
+            return {**default_profile, **resp.data}
+    except Exception as e:
+        print(f"Profile fetch skipped (table might be missing or empty): {e}")
+    
+    return default_profile
+
+def update_profile_data(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Update profile data in Supabase. Upserts the single record."""
+    # We assume there's only one record. We use a fixed ID or just upsert.
+    # For simplicity, we'll try to update the first record found, or insert if empty.
+    client = get_client()
+    try:
+        # Check if record exists
+        resp = client.table(PROFILE_TABLE).select("id").limit(1).execute()
+        if resp.data:
+            pid = resp.data[0]["id"]
+            update_resp = client.table(PROFILE_TABLE).update(data).eq("id", pid).execute()
+            return update_resp.data[0]
+        else:
+            insert_resp = client.table(PROFILE_TABLE).insert(data).execute()
+            return insert_resp.data[0]
+    except Exception as e:
+        print(f"Profile update failed: {e}")
+        raise e

@@ -213,3 +213,22 @@ def ai_query(request: Request, body: dict) -> dict:
         "response": response, 
         "remaining": max(0, remaining - 1)
     }
+
+# ---------------------------------------------------------------------------
+# Profile
+# ---------------------------------------------------------------------------
+
+from .database import get_profile_data, update_profile_data
+
+@app.get("/api/profile")
+def get_profile() -> dict:
+    """Public endpoint to fetch portfolio profile/header data."""
+    return get_profile_data()
+
+@app.put("/api/profile")
+def update_profile(
+    body: dict, 
+    _: str = Depends(get_current_admin)
+) -> dict:
+    """Admin endpoint to update portfolio profile/header data."""
+    return update_profile_data(body)
