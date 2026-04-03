@@ -12,8 +12,12 @@ env:
   REPOSITORY_NAME: portfolio-repo
 
 jobs:
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }}
+
   deploy-frontend:
     name: Build & Deploy Frontend to Firebase
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
