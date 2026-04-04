@@ -45,10 +45,13 @@ jobs:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          no_allow_unauthenticated: false
           env_vars: |
             SUPABASE_URL=${{ secrets.SUPABASE_URL }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            ADMIN_PASSWORD_HASH=${{ secrets.ADMIN_PASSWORD_HASH }}
             ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
 
       - name: Show Output
