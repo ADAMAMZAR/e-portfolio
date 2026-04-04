@@ -26,7 +26,7 @@
 /* ── Shared face ──────────────────────────────────────── */
 .card-face {
   backface-visibility: hidden;
-  border: 1px solid rgba(168, 85, 247, 0.18);
+  border: 1.5px solid rgba(168, 85, 247, 0.4); /* Increased thickness and opacity */
   border-radius: 1.1rem;
   inset: 0;
   overflow: hidden;
@@ -98,7 +98,6 @@
   background: rgba(14, 6, 28, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(168, 85, 247, 0.22);
   color: #e8e0ff;
   display: flex;
   flex-direction: column;
@@ -188,6 +187,7 @@
 
 /* ── Skeleton ─────────────────────────────────────────── */
 .card-skeleton {
+  border: 1.5px solid rgba(168, 85, 247, 0.4);
   border-radius: 1.1rem;
   inset: 0;
   overflow: hidden;

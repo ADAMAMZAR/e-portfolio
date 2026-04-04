@@ -21,11 +21,17 @@ BUCKET = "project-images"
 # Storage
 # ---------------------------------------------------------------------------
 
-def upload_image(filename: str, data: bytes, content_type: str) -> str:
-    """Upload an image to Supabase Storage and return its public URL."""
+def upload_image(filename: str, data: bytes, content_type: str, custom_path: str = None) -> str:
+    """Upload a file to Supabase Storage and return its public URL.
+    If custom_path is provided, it use that instead of a random UUID.
+    """
     import uuid as _uuid
-    ext = filename.rsplit(".", 1)[-1] if "." in filename else "jpg"
-    path = f"{_uuid.uuid4()}.{ext}"
+    if custom_path:
+        path = custom_path
+    else:
+        ext = filename.rsplit(".", 1)[-1] if "." in filename else "jpg"
+        path = f"{_uuid.uuid4()}.{ext}"
+    
     client = get_client()
     client.storage.from_(BUCKET).upload(
         path,
@@ -190,6 +196,7 @@ def get_profile_data() -> Dict[str, Any]:
         "image_zoom": 1.0,
         "image_x": 50.0,
         "image_y": 50.0,
+        "resume_url": "",
         "socials": {
             "linkedin": {"url": "https://www.linkedin.com/in/adamamzar/", "enabled": True},
             "whatsapp": {"url": "https://wa.me/+60197920048", "enabled": True},

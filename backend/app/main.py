@@ -1,5 +1,7 @@
 from typing import List
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
+from fastapi.responses import RedirectResponse, Response
+import requests
 from fastapi.middleware.cors import CORSMiddleware
 
 from .auth import LoginRequest, TokenResponse, create_access_token, get_current_admin, verify_password
@@ -43,24 +45,29 @@ def health() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Image Upload
+# Image & Document Upload
 # ---------------------------------------------------------------------------
 
-ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
-MAX_SIZE_MB = 5
+ALLOWED_TYPES = {
+    "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
+    "application/pdf"
+}
+MAX_SIZE_MB = 10  # Increased for larger resumes
 
 @app.post("/api/upload-image")
 def upload_project_image(
     file: UploadFile = File(...),
+    custom_path: str = None,
     _: str = Depends(get_current_admin),
 ) -> dict:
-    """Upload a project image to Supabase Storage. Returns { url }."""
+    """Upload a file to Supabase Storage. Returns { url }."""
     if file.content_type not in ALLOWED_TYPES:
-        raise HTTPException(400, f"Unsupported file type: {file.content_type}. Allowed: JPEG, PNG, WEBP, GIF, SVG")
+        raise HTTPException(400, f"Unsupported file type: {file.content_type}. Allowed: JPEG, PNG, WEBP, GIF, SVG, PDF")
     data = file.file.read()
     if len(data) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(400, f"File too large. Max size is {MAX_SIZE_MB} MB")
-    url = upload_image(file.filename or "upload", data, file.content_type)
+    
+    url = upload_image(file.filename or "upload", data, file.content_type, custom_path)
     return {"url": url}
 
 
@@ -237,3 +244,27 @@ def update_profile(
 ) -> dict:
     """Admin endpoint to update portfolio profile/header data."""
     return update_profile_data(body)
+
+@app.get("/api/resume")
+def get_resume():
+    """Proxies the latest uploaded resume PDF so the URL remains branded."""
+    profile = get_profile_data()
+    resume_url = profile.get("resume_url")
+    if not resume_url:
+        raise HTTPException(404, "Resume not found. Please upload one via the Admin Panel.")
+    
+    try:
+        # Fetch the file from Supabase and stream it back to the user
+        response = requests.get(resume_url, stream=True)
+        response.raise_for_status()
+        
+        return Response(
+            content=response.content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": 'inline; filename="Adam_Amzar_Resume.pdf"'
+            }
+        )
+    except Exception as e:
+        # Fallback to redirect if proxying fails for any reason
+        return RedirectResponse(url=resume_url)

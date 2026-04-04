@@ -90,6 +90,29 @@ export function AdminPanel() {
     }
   }
 
+  async function handleResumeUpload(file) {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const token = localStorage.getItem("admin_token");
+      // We use a fixed filename to keep the URL professional and consistent
+      const res = await fetch("/api/upload-image?custom_path=Adam_Amzar_Resume.pdf", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      setProfileForm(f => ({ ...f, resume_url: url }));
+      alert("Resume uploaded successfully!");
+    } catch (err) {
+      alert("Resume upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function loadProjects() {
     setLoading(true);
     setError(null);
@@ -455,6 +478,43 @@ export function AdminPanel() {
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <label>Resume PDF</label>
+                <div className="resume-upload-section">
+                  <div className="image-upload-area"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleResumeUpload(f); }}
+                  >
+                    <label className="image-drop-label" htmlFor="resume-file-input">
+                      {uploading ? (
+                        <span className="upload-spinner">⏳ Uploading…</span>
+                      ) : (
+                        <>
+                          <span className="upload-icon">📄</span>
+                          <span>{profileForm.resume_url ? "Replace Resume PDF" : "Upload Resume PDF"}</span>
+                        </>
+                      )}
+                    </label>
+                    <input
+                      id="resume-file-input"
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleResumeUpload(f);
+                      }}
+                    />
+                  </div>
+                  {profileForm.resume_url && (
+                    <div className="resume-status-bar">
+                      <span className="status-tag">✓ Resume uploaded</span>
+                      <a href="/api/resume" target="_blank" rel="noopener noreferrer" className="preview-link">View Current PDF</a>
+                    </div>
+                  )}
                 </div>
               </div>
 
