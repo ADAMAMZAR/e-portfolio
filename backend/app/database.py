@@ -186,7 +186,7 @@ def get_profile_data() -> Dict[str, Any]:
         "eyebrow": "Adam Amzar | Full Stack AI Engineer",
         "title": "Building intelligent, scalable AI solutions.",
         "subtitle": "From LLM-powered applications to high-performance backends, I engineer systems that bridge the gap between AI research and production-ready products.",
-        "image_url": "/profile.jpg",
+        "image_url": "",
         "image_zoom": 1.0,
         "image_x": 50.0,
         "image_y": 50.0,
