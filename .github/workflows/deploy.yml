@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: portfolio-492203
-  REGION: us-central1
+  REGION: asia-southeast1
   SERVICE_NAME: portfolio-backend
   REPOSITORY_NAME: portfolio-repo
 
