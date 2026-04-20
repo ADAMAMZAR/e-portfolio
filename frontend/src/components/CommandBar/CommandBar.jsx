@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import "./CommandBar.css";
 
+const FIRST_VISIT_KEY = "portfolio_ai_fab_seen";
+
 /**
  * CommandBar component provides an AI-powered search and assistant overlay.
  * Triggered by Ctrl+K or the floating action button.
@@ -12,9 +14,13 @@ export function CommandBar() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [energy, setEnergy] = useState({ remaining: 5, total: 5 });
-  
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(false);
+
   /** @type {React.MutableRefObject<HTMLInputElement | null>} */
   const inputRef = useRef(null);
+  /** @type {React.MutableRefObject<ReturnType<typeof setTimeout> | null>} */
+  const tooltipTimer = useRef(null);
 
   useEffect(() => {
     /** @param {KeyboardEvent} e */
@@ -30,6 +36,31 @@ export function CommandBar() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // First-visit: pulse + tooltip
+  useEffect(() => {
+    const hasSeen = localStorage.getItem(FIRST_VISIT_KEY);
+    if (!hasSeen) {
+      // Delay until after hero animation finishes (~0.9s of stagger + buffer)
+      const delay = setTimeout(() => {
+        setIsPulsing(true);
+        setShowTooltip(true);
+        localStorage.setItem(FIRST_VISIT_KEY, "1");
+        // Auto-dismiss tooltip after 6 s
+        tooltipTimer.current = setTimeout(() => setShowTooltip(false), 6000);
+        // Remove pulse class after animation completes (1.1s keyframe)
+        setTimeout(() => setIsPulsing(false), 1200);
+      }, 1200);
+      return () => clearTimeout(delay);
+    }
+  }, []);
+
+  // Dismiss tooltip immediately when FAB is clicked
+  const handleFabClick = () => {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    setShowTooltip(false);
+    setIsOpen(true);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -86,14 +117,27 @@ export function CommandBar() {
   return (
     <>
       {!isOpen && (
-        <button 
-          className="ai-fab" 
-          onClick={() => setIsOpen(true)}
-          aria-label="Open AI Assistant"
-        >
-          <span className="ai-fab-sparkle">✨</span>
-          <span className="ai-fab-text">Ask AI</span>
-        </button>
+        <div className="ai-fab-wrapper">
+          {showTooltip && (
+            <div className="ai-fab-tooltip" role="tooltip">
+              Ask me anything about Adam's work!
+              <span className="ai-fab-tooltip-kbd">Ctrl + K</span>
+              <button
+                className="ai-fab-tooltip-close"
+                onClick={() => setShowTooltip(false)}
+                aria-label="Dismiss tooltip"
+              >✕</button>
+            </div>
+          )}
+          <button
+            className={`ai-fab${isPulsing ? " ai-fab--pulse" : ""}`}
+            onClick={handleFabClick}
+            aria-label="Open AI Assistant"
+          >
+            <span className="ai-fab-sparkle">✨</span>
+            <span className="ai-fab-text">Ask AI</span>
+          </button>
+        </div>
       )}
 
       {isOpen && (

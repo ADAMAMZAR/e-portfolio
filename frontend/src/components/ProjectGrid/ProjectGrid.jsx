@@ -5,14 +5,19 @@ export function ProjectGrid({ projects }) {
   return (
     <div className="project-grid" aria-live="polite">
       <AnimatePresence mode="popLayout">
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <motion.div
             key={project.id}
             layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            transition={{
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+              delay: Math.min(index * 0.06, 0.3),
+            }}
           >
             <ProjectCard project={project} />
           </motion.div>
@@ -21,3 +26,4 @@ export function ProjectGrid({ projects }) {
     </div>
   );
 }
+

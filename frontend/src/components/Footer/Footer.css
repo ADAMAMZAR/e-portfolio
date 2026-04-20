@@ -1,0 +1,67 @@
+.portfolio-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 4rem;
+  padding: 0 4%;
+  padding-bottom: 2.5rem;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-top: 1px solid rgba(168, 85, 247, 0.15);
+  padding-top: 1.5rem;
+}
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.footer-name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.footer-dot {
+  color: rgba(168, 85, 247, 0.5);
+}
+
+.footer-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.footer-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: var(--muted);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.footer-icon-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.footer-icon-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+  color: var(--text);
+  transform: translateY(-2px);
+}

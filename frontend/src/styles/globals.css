@@ -186,11 +186,26 @@ body::after {
   align-items: center;
 }
 
+@media (max-width: 768px) {
+  .header-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+}
+
 .brand-section {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .brand-section {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
 }
 
 /* Header Image */
@@ -209,6 +224,16 @@ body::after {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(236, 72, 153, 0.5));
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .header-image-wrapper {
+    order: -1; /* Image on top on mobile */
+  }
+  .image-border-glow {
+    width: 200px;
+    height: 230px;
+  }
 }
 
 .profile-image {
@@ -246,6 +271,13 @@ body::after {
   background-clip: text;
 }
 
+@media (max-width: 768px) {
+  .portfolio-header h1 {
+    max-width: 100%;
+    font-size: 2.2rem;
+  }
+}
+
 .subtitle {
   color: var(--muted);
   margin-top: 0.9rem;
@@ -254,12 +286,96 @@ body::after {
   line-height: 1.6;
 }
 
+/* ── Hero Stats Strip ─────────────────────────────────────── */
+.hero-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 1.6rem;
+  margin-bottom: 0.2rem;
+}
+
+@media (max-width: 768px) {
+  .hero-stats {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0 1.5rem 0 0;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .hero-stat {
+    padding: 0;
+    align-items: center;
+  }
+  .hero-stat + .hero-stat {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+.hero-stat + .hero-stat {
+  padding-left: 1.5rem;
+  border-left: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.hero-stat-value {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(130deg, #fff 20%, var(--accent) 80%, var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+.hero-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+
+/* ── Section Label Row ──────────────────────────────────── */
+.section-label-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.section-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.section-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(168, 85, 247, 0.25), transparent);
+  border: none;
+}
+
 /* ── Filter Bar ───────────────────────────────────────── */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
-  margin: 1.4rem 0 1.8rem;
+  margin: 0 0 1.8rem;
 }
 
 .filter-pill {
@@ -297,6 +413,19 @@ body::after {
 
 @media (min-width: 640px) {
   .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 639px) {
+  .filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;      /* Firefox */
+    padding-bottom: 0.25rem;
+    margin-bottom: 1.4rem;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  .filter-pill { flex-shrink: 0; }
 }
 
 /* Removed 3-column layout at 1024px as requested */

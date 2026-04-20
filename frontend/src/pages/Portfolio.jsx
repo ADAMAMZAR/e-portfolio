@@ -1,11 +1,80 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { FilterBar } from "../components/FilterBar/FilterBar";
 import { ProjectGrid } from "../components/ProjectGrid/ProjectGrid";
 import { LoginModal } from "../components/LoginModal/LoginModal";
 import { CommandBar } from "../components/CommandBar/CommandBar";
 import { SkeletonCard, SkeletonHero } from "../components/Skeleton/SkeletonCard";
+import { Footer } from "../components/Footer/Footer";
 import { useProjectFilter } from "../hooks/useProjectFilter";
 import { useAuth } from "../context/AuthContext";
+
+// ── Hero entrance animation variants ─────────────────────
+const heroContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
+};
+
+const heroItem = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const heroImage = {
+  hidden: { opacity: 0, x: 30, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 },
+  },
+};
+
+/** Count-up stat that animates when scrolled into view (fires once). */
+function AnimatedStat({ value, suffix, label }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const animated = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !animated.current) {
+          animated.current = true;
+          const duration = 1200; // slightly longer for premium feel
+          const startTime = performance.now();
+
+          const tick = (now) => {
+            const t = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            setCount(Math.round(eased * value));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value]);
+
+  return (
+    <div className="hero-stat" ref={ref}>
+      <span className="hero-stat-value">
+        {count}{suffix}
+      </span>
+      <span className="hero-stat-label">{label}</span>
+    </div>
+  );
+}
 
 export function Portfolio() {
   const [state, setState] = useState({ status: "loading", projects: [], message: "" });
@@ -17,6 +86,27 @@ export function Portfolio() {
   
   const { isAdmin, logout } = useAuth();
   const { activeTag, setActiveTag, tags, filteredProjects } = useProjectFilter(state.projects);
+
+  // ── Hero stats data calculation (Dynamic) ─────────────────
+  // const stats = useMemo(() => {
+  //   const activeProjects = state.projects.filter(p => p.isActive === 1);
+    
+  //   const projectsCount = activeProjects.length;
+    
+  //   const aiKeywords = ["AI", "LLM", "ML", "Machine Learning", "OpenAI", "Llama", "Deep Learning", "Neural Network", "NLP"];
+  //   const aiSystemsCount = activeProjects.filter(p => 
+  //     p.category === "ml" || 
+  //     p.techStack?.some(tech => aiKeywords.some(kw => tech.toUpperCase().includes(kw.toUpperCase())))
+  //   ).length;
+
+  //   const productionAppsCount = activeProjects.filter(p => p.demoLink && p.demoLink.trim() !== "").length;
+
+  //   return [
+  //     { value: projectsCount, suffix: "+", label: "Projects Built" },
+  //     { value: aiSystemsCount, suffix: "",  label: "AI Systems" },
+  //     { value: productionAppsCount, suffix: "",  label: "Production Apps" },
+  //   ];
+  // }, [state.projects]);
 
   useEffect(() => {
     async function fetchData() {
@@ -71,12 +161,17 @@ export function Portfolio() {
           <SkeletonHero />
         ) : (
           <div className="header-container">
-            <div className="header-content">
-              <div className="brand-section">
+          <motion.div
+            className="header-content"
+            variants={heroContainer}
+            initial="hidden"
+            animate="visible"
+          >
+              <motion.div className="brand-section" variants={heroItem}>
                 <img src="/icon.png" alt={profile.name || "Adam Amzar"} className="brand-logo" />
                 <p className="eyebrow">{profile.eyebrow || "Adam Amzar | Full Stack AI Engineer"}</p>
-              </div>
-              <h1>
+              </motion.div>
+              <motion.h1 variants={heroItem}>
                 {profile.title ? (
                   profile.title.split(/(intelligent, |scalable AI)/).map((part, i) => 
                     part === "scalable AI" ? <span key={i} className="text-gradient">{part}</span> : part
@@ -84,10 +179,17 @@ export function Portfolio() {
                 ) : (
                   <>Building intelligent, <span className="text-gradient">scalable AI</span> solutions.</>
                 )}
-              </h1>
-              <p className="subtitle">{profile.subtitle || "From LLM-powered applications to high-performance backends, I engineer systems that bridge the gap between AI research and production-ready products."}</p>
+              </motion.h1>
+              <motion.p className="subtitle" variants={heroItem}>{profile.subtitle || "From LLM-powered applications to high-performance backends, I engineer systems that bridge the gap between AI research and production-ready products."}</motion.p>
+
+              {/* ── Stats strip ── */}
+              {/* <motion.div className="hero-stats" variants={heroItem}>
+                {stats.map((stat) => (
+                  <AnimatedStat key={stat.label} {...stat} />
+                ))}
+              </motion.div> */}
               
-              <div className="social-actions">
+              <motion.div className="social-actions" variants={heroItem}>
                 {profile.socials?.linkedin?.enabled && profile.socials?.linkedin?.url && (
                   <a href={profile.socials?.linkedin?.url} target="_blank" rel="noopener noreferrer" className="social-btn linkedin">
                     <svg className="social-icon-svg" viewBox="0 0 24 24" fill="currentColor">
@@ -120,10 +222,15 @@ export function Portfolio() {
                     Resume
                   </a>
                 )}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
             
-            <div className="header-image-wrapper">
+            <motion.div
+              className="header-image-wrapper"
+              variants={heroImage}
+              initial="hidden"
+              animate="visible"
+            >
               <div className="image-border-glow">
                 {profile.image_url && (
                   <img 
@@ -137,12 +244,17 @@ export function Portfolio() {
                   />
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
       </header>
 
       {state.status === "error" ? <p className="error-banner">Failed to load projects: {state.message}</p> : null}
+
+      <div className="section-label-row">
+        <span className="section-eyebrow">✦ Selected Works</span>
+        <span className="section-rule" aria-hidden="true" />
+      </div>
 
       <FilterBar tags={tags} activeTag={activeTag} onChange={setActiveTag} />
 
@@ -156,6 +268,7 @@ export function Portfolio() {
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
       <CommandBar />
+      <Footer profile={profile} />
     </main>
   );
 }
