@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Portfolio } from "./pages/Portfolio";
 import { AdminPanel } from "./pages/AdminPanel";
 import { CommandBar } from "./components/CommandBar/CommandBar";
-
+import { NavBar } from "./components/NavBar/NavBar";
 function Router() {
   const { isAdmin, login } = useAuth();
   const [, setRerender] = useState(0); // Trigger re-render on manual navigation
@@ -41,6 +41,7 @@ function Router() {
 export function App() {
   return (
     <AuthProvider>
+      <NavBar />
       <CommandBar />
       <Router />
     </AuthProvider>

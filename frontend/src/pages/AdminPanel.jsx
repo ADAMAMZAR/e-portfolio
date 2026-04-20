@@ -43,7 +43,6 @@ export function AdminPanel() {
   const [uploading, setUploading] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  // ----- Image upload -----
   async function handleImageFile(file) {
     setUploading(true);
     setFormError(null);
@@ -82,12 +81,23 @@ export function AdminPanel() {
       });
       if (!res.ok) throw new Error("Upload failed");
       const { url } = await res.json();
-      setProfileForm(f => ({ ...f, image_url: url }));
+      setProfileForm(f => {
+        const existing = f.image_url ? f.image_url.trim() : "";
+        return { ...f, image_url: existing ? `${existing},${url}` : url };
+      });
     } catch (err) {
       alert("Profile image upload failed");
     } finally {
       setUploading(false);
     }
+  }
+
+  function handleProfileImageRemove(urlToRemove) {
+    setProfileForm(f => {
+      const urls = f.image_url ? f.image_url.split(",").map(u => u.trim()) : [];
+      const filtered = urls.filter(u => u !== urlToRemove);
+      return { ...f, image_url: filtered.join(",") };
+    });
   }
 
   async function handleResumeUpload(file) {
@@ -165,7 +175,6 @@ export function AdminPanel() {
     }
   }
 
-  // ----- Form helpers -----
   function openAdd() {
     setEditId(null);
     setForm(EMPTY_FORM);
@@ -234,7 +243,6 @@ export function AdminPanel() {
     }
   }
 
-  // ----- Field helpers -----
   const set = (field, value) =>
     setForm((f) => ({ ...f, [field]: value }));
 
@@ -260,7 +268,6 @@ export function AdminPanel() {
 
   return (
     <div className="admin-page">
-      {/* Header */}
       <header className="admin-header">
         <div className="admin-header-left">
           <a href="/" className="admin-back">← Portfolio</a>
@@ -288,7 +295,6 @@ export function AdminPanel() {
         </div>
       </header>
 
-      {/* Content */}
       <main className="admin-main">
         {loading && <p className="admin-status">Loading…</p>}
         {error && <p className="admin-error">{error}</p>}
@@ -391,22 +397,25 @@ export function AdminPanel() {
               </div>
 
               <div className="form-row">
-                <label>Profile Image</label>
+                <label>Profile Images</label>
                 <div className="image-management-area">
-                  <div className="profile-tuning-layout">
+                  <div className="profile-tuning-layout" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {profileForm.image_url && (
-                      <div className="tuning-preview-section">
-                        <label className="sub-label">Live Preview</label>
-                        <div className="tuning-preview-frame">
-                          <img 
-                            src={profileForm.image_url} 
-                            alt="Profile Preview" 
-                            style={{
-                              objectPosition: `${profileForm.image_x ?? 50}% ${profileForm.image_y ?? 50}%`,
-                              transform: `scale(${profileForm.image_zoom ?? 1})`
-                            }}
-                          />
-                        </div>
+                      <div className="image-previews-grid" style={{ marginBottom: "1rem" }}>
+                        {profileForm.image_url.split(",").filter(Boolean).map(url => (
+                          <div key={url} className="image-preview-item">
+                            <img 
+                              src={url.trim()} 
+                              alt="Profile Preview" 
+                              className="image-preview"
+                              style={{
+                                objectPosition: `${profileForm.image_x ?? 50}% ${profileForm.image_y ?? 50}%`,
+                                transform: `scale(${profileForm.image_zoom ?? 1})`
+                              }}
+                            />
+                            <button type="button" className="btn-remove-image" onClick={() => handleProfileImageRemove(url.trim())}>✕</button>
+                          </div>
+                        ))}
                       </div>
                     )}
                     
@@ -421,7 +430,7 @@ export function AdminPanel() {
                           ) : (
                             <>
                               <span className="upload-icon">🖼️</span>
-                              <span>{profileForm.image_url ? "Change image" : "Upload image"}</span>
+                              <span>{profileForm.image_url ? "Add more images" : "Upload image"}</span>
                             </>
                           )}
                         </label>
@@ -430,9 +439,10 @@ export function AdminPanel() {
                           type="file"
                           accept="image/*"
                           style={{ display: "none" }}
+                          multiple
                           onChange={(e) => {
-                            const f = e.target.files?.[0];
-                            if (f) handleProfileImageUpload(f);
+                            const files = Array.from(e.target.files || []);
+                            files.forEach(f => handleProfileImageUpload(f));
                           }}
                         />
                       </div>
@@ -564,7 +574,6 @@ export function AdminPanel() {
         )}
       </main>
 
-      {/* Project Form Modal */}
       {showForm && (
         <div className="modal-backdrop" onClick={() => setShowForm(false)}>
           <div className="form-modal" onClick={(e) => e.stopPropagation()}>

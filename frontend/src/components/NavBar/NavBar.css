@@ -1,0 +1,82 @@
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+  z-index: 100;
+  pointer-events: none; /* Let clicks pass through empty space */
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.floating-navbar {
+  pointer-events: auto; /* Enable clicks on the navbar itself */
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  background: rgba(20, 15, 30, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.navbar-container.scrolled .floating-navbar {
+  background: rgba(18, 12, 30, 0.75);
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(168, 85, 247, 0.1);
+}
+
+.nav-item {
+  position: relative;
+  padding: 0.5rem 1.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: color 0.3s ease;
+  z-index: 1;
+}
+
+.nav-item:hover {
+  color: var(--text);
+}
+
+.nav-item.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Moving pill indicator */
+.nav-item-indicator {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 999px;
+  z-index: -1;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+}
+
+@media (max-width: 640px) {
+  .navbar-container {
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .floating-navbar {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.3rem;
+  }
+  
+  .nav-item {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}

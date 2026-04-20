@@ -2,7 +2,6 @@
   position: relative;
   z-index: 1;
   margin-top: 4rem;
-  padding: 0 4%;
   padding-bottom: 2.5rem;
 }
 
@@ -35,33 +34,70 @@
   color: rgba(168, 85, 247, 0.5);
 }
 
-.footer-links {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+.contact-section {
+  width: 100%;
+  margin: 0 0 4rem;
+  text-align: left;
 }
 
-.footer-icon-btn {
-  display: inline-flex;
+.contact-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.contact-subtitle {
+  color: #a1a1aa;
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+}
+
+.contact-action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contact-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  color: var(--muted);
-  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.5rem;
+  border-radius: 14px;
+  color: #f8fafc;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
 
-.footer-icon-btn svg {
-  width: 14px;
-  height: 14px;
+.contact-btn svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
 }
 
-.footer-icon-btn:hover {
-  background: rgba(168, 85, 247, 0.2);
-  border-color: rgba(168, 85, 247, 0.5);
-  color: var(--text);
+.contact-btn:hover {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.4);
   transform: translateY(-2px);
+  color: #fff;
+}
+
+.contact-btn:hover svg {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .contact-action-grid {
+    grid-template-columns: 1fr;
+  }
 }
