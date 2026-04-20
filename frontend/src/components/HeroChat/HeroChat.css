@@ -132,6 +132,49 @@
   line-height: 1.6;
 }
 
+.ai-bubble p {
+  margin: 0;
+}
+
+.ai-bubble p + p {
+  margin-top: 0.8rem;
+}
+
+.ai-bubble ul, .ai-bubble ol {
+  margin: 0.8rem 0 0 0;
+  padding-left: 1.5rem;
+}
+
+.ai-bubble li {
+  margin-bottom: 0.3rem;
+}
+
+.ai-bubble strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.ai-bubble code {
+  background: rgba(255,255,255,0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #e2e8f0;
+}
+
+.ai-bubble a {
+  color: #a855f7;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.5);
+  transition: all 0.2s;
+}
+
+.ai-bubble a:hover {
+  color: #d8b4fe;
+  border-bottom-color: #d8b4fe;
+}
+
 .typing-indicator {
   display: flex;
   align-items: center;

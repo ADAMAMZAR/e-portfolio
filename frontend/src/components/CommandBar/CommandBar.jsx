@@ -25,7 +25,7 @@ export function CommandBar() {
   useEffect(() => {
     /** @param {KeyboardEvent} e */
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if (((e.ctrlKey || e.metaKey) && e.key === "k") || (e.altKey && e.key === "Enter")) {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }
@@ -116,29 +116,6 @@ export function CommandBar() {
 
   return (
     <>
-      {!isOpen && (
-        <div className="ai-fab-wrapper">
-          {showTooltip && (
-            <div className="ai-fab-tooltip" role="tooltip">
-              Ask me anything about Adam's work!
-              <span className="ai-fab-tooltip-kbd">Ctrl + K</span>
-              <button
-                className="ai-fab-tooltip-close"
-                onClick={() => setShowTooltip(false)}
-                aria-label="Dismiss tooltip"
-              >✕</button>
-            </div>
-          )}
-          <button
-            className={`ai-fab${isPulsing ? " ai-fab--pulse" : ""}`}
-            onClick={handleFabClick}
-            aria-label="Open AI Assistant"
-          >
-            <span className="ai-fab-sparkle">✨</span>
-            <span className="ai-fab-text">Ask AI</span>
-          </button>
-        </div>
-      )}
 
       {isOpen && (
         <div className="command-bar-overlay" onClick={() => setIsOpen(false)}>

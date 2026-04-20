@@ -161,7 +161,7 @@ export function AboutMe({ profile }) {
 
         <motion.div className="bento-card location-card" variants={cardVariants}>
           <div className="location-info">
-            <h3>SELANGOR, MY</h3>
+            <h3>Selangor, Malaysia</h3>
             <p className="coordinates">3.0738° N, 101.5183° E</p>
             <p className="timezone"><span className="pulse-dot"></span> GMT+8</p>
           </div>

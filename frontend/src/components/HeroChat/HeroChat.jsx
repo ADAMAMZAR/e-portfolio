@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import "./HeroChat.css";
 
 const boxVariants = {
@@ -24,13 +25,12 @@ export function HeroChat({ profile }) {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [messageCount, setMessageCount] = useState(0);
-  const endOfMessagesRef = useRef(null);
+  const [energy, setEnergy] = useState({ remaining: 5, total: 5 });
+  const chatContentRef = useRef(null);
   
   const name = profile?.name || "Adam Amzar";
   const firstName = name.split(" ")[0];
   const MAX_CHARS = 300;
-  const MAX_MESSAGES = 5;
 
   const suggestions = [
     "What is your tech stack?",
@@ -39,29 +39,39 @@ export function HeroChat({ profile }) {
     "Let's chat about a project"
   ];
 
-  const handleSend = (text) => {
-    if (!text.trim() || isTyping || messageCount >= MAX_MESSAGES) return;
-    setMessageCount(prev => prev + 1);
+  const handleSend = async (text) => {
+    if (!text.trim() || isTyping || energy.remaining <= 0) return;
+    setEnergy(prev => ({ ...prev, remaining: prev.remaining - 1 }));
 
     setMessages(prev => [...prev, { role: "user", text }]);
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      let aiResponse = "I'm an AI assistant for Adam. He's currently focused on building high-performance backends and intelligent AI applications. I can assure you he has the skills to bring your ideas to reality! Reach out via the Contact section to discuss your project in detail.";
-      
-      const lowerText = text.toLowerCase();
-      if (lowerText.includes("tech stack")) {
-        aiResponse = "Adam's core stack includes Python, Node.js, React, and modern databases. He specializes in integrating LLM APIs and building scalable cloud-native architectures.";
-      } else if (lowerText.includes("ai app")) {
-        aiResponse = "Absolutely! From prompt engineering and RAG systems to agent orchestration, Adam builds robust AI pipelines ready for production.";
-      } else if (lowerText.includes("backend")) {
-        aiResponse = "Performance is key. He ensures efficient database design, utilizes fast frameworks like FastAPI, and leverages caching to handle massive scale.";
-      }
+    try {
+      const res = await fetch("/api/ai/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: text }),
+      });
 
-      setMessages(prev => [...prev, { role: "ai", text: aiResponse }]);
+      if (res.status === 429) {
+        setMessages(prev => [...prev, { role: "ai", text: "Daily limit reached. Please come back tomorrow!" }]);
+        setEnergy(prev => ({ ...prev, remaining: 0 }));
+        return;
+      }
+      
+      if (!res.ok) throw new Error("Failed to fetch AI response");
+
+      const data = await res.json();
+      setMessages(prev => [...prev, { role: "ai", text: data.response }]);
+      if (data.remaining !== undefined) {
+        setEnergy(prev => ({ ...prev, remaining: data.remaining }));
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { role: "ai", text: "Error: Could not reach the AI service." }]);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -71,8 +81,26 @@ export function HeroChat({ profile }) {
   };
 
   useEffect(() => {
-    if (endOfMessagesRef.current) {
-      endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
+    const fetchLimit = async () => {
+      try {
+        const res = await fetch("/api/ai/limit");
+        if (res.ok) {
+          const data = await res.json();
+          setEnergy({ remaining: data.remaining, total: data.limit });
+        }
+      } catch (err) {
+        console.error("Failed to fetch AI limit:", err);
+      }
+    };
+    fetchLimit();
+  }, []);
+
+  useEffect(() => {
+    if (chatContentRef.current) {
+      chatContentRef.current.scrollTo({
+        top: chatContentRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [messages, isTyping]);
 
@@ -103,7 +131,7 @@ export function HeroChat({ profile }) {
                   key={pill} 
                   className="chat-pill"
                   onClick={() => handleSend(pill)}
-                  disabled={messageCount >= MAX_MESSAGES}
+                  disabled={energy.remaining <= 0}
                 >
                   {pill}
                 </button>
@@ -111,7 +139,7 @@ export function HeroChat({ profile }) {
             </div>
           </div>
         ) : (
-          <div className="chat-content-area">
+          <div className="chat-content-area" ref={chatContentRef}>
             <AnimatePresence initial={false}>
               {messages.map((msg, idx) => (
                 <motion.div 
@@ -122,7 +150,7 @@ export function HeroChat({ profile }) {
                   animate="visible"
                 >
                   <div className={`chat-bubble ${msg.role === "user" ? "user-bubble" : "ai-bubble"}`}>
-                    {msg.text}
+                    {msg.role === "user" ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
                   </div>
                 </motion.div>
               ))}
@@ -140,7 +168,6 @@ export function HeroChat({ profile }) {
                 </motion.div>
               )}
             </AnimatePresence>
-            <div ref={endOfMessagesRef} />
           </div>
         )}
 
@@ -148,10 +175,10 @@ export function HeroChat({ profile }) {
           <input 
             type="text" 
             className="chat-input" 
-            placeholder={messageCount >= MAX_MESSAGES ? "Chat limit reached." : `Ask anything about ${firstName}...`}
+            placeholder={energy.remaining <= 0 ? "Daily limit reached." : `Ask anything about ${firstName}...`}
             value={inputValue}
             maxLength={MAX_CHARS}
-            disabled={messageCount >= MAX_MESSAGES}
+            disabled={energy.remaining <= 0}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
           />
@@ -161,17 +188,37 @@ export function HeroChat({ profile }) {
             top: "50%", 
             transform: "translateY(-50%)", 
             display: "flex", 
+            alignItems: "center",
             gap: "1rem", 
             fontSize: "0.75rem", 
             color: "var(--muted)", 
-            pointerEvents: "none",
-            transition: "all 0.3s ease"
+            pointerEvents: "auto",
+            transition: "all 0.3s ease",
+            fontWeight: 500,
+            letterSpacing: "0.05em"
           }}>
-            <span>{inputValue.length}/{MAX_CHARS}</span>
-            <span>{messageCount}/{MAX_MESSAGES}</span>
+            <div title="Remaining daily AI queries" style={{ cursor: "help", display: "flex", alignItems: "center", gap: "0.6rem", paddingRight: "0.8rem", borderRight: "1px solid rgba(255, 255, 255, 0.15)" }}>
+              <div style={{ display: "flex", gap: "4px" }}>
+                {[...Array(energy.total)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    style={{
+                      width: "6px", 
+                      height: "6px", 
+                      borderRadius: "50%", 
+                      transition: "all 0.3s ease",
+                      background: i < energy.remaining ? "var(--primary)" : "rgba(255, 255, 255, 0.1)",
+                      boxShadow: i < energy.remaining ? "0 0 5px var(--primary)" : "none"
+                    }}
+                  />
+                ))}
+              </div>
+              <span>{energy.remaining}/{energy.total}</span>
+            </div>
+            <span title="Maximum character length per message" style={{ cursor: "help" }}>{inputValue.length}/{MAX_CHARS}</span>
           </div>
 
-          {inputValue.trim() && messageCount < MAX_MESSAGES && (
+          {inputValue.trim() && energy.remaining > 0 && (
             <button 
               className="chat-send-btn outline-none"
               onClick={() => handleSend(inputValue)}
