@@ -2,14 +2,13 @@ import { TechPill } from "../TechPill/TechPill";
 
 const MAX_PILLS = 6;
 
-export function CardBack({ project }) {
+export function CardBack({ project, onExpand }) {
   const stack = project.techStack ?? [];
   const visibleStack = stack.slice(0, MAX_PILLS);
   const overflow = stack.length - MAX_PILLS;
 
   const hasDemo = Boolean(project.demoLink);
   const hasRepo = Boolean(project.repoLink);
-  const hasLinks = hasDemo || hasRepo;
 
   return (
     <div className="card-face card-back">
@@ -33,22 +32,39 @@ export function CardBack({ project }) {
 
       {/* Bottom: links, lock notice, or wip */}
       {project.isConfidential ? (
-        <div className="card-lock">🔒 Confidential — links are restricted.</div>
-      ) : hasLinks ? (
-        <div className="card-actions">
-          {hasDemo && (
-            <a href={project.demoLink} target="_blank" rel="noopener noreferrer" className="action-btn action-btn-primary">
-              ↗ Demo
-            </a>
-          )}
-          {hasRepo && (
-            <a href={project.repoLink} target="_blank" rel="noopener noreferrer" className="action-btn action-btn-secondary">
-              View Repo
-            </a>
-          )}
+        <div className="card-lock">
+          <span className="lock-icon">🔒</span>
+          <div className="lock-text">
+            <strong>NDA Restricted</strong>
+            <span>Technical overview available upon request.</span>
+          </div>
+          <button className="action-btn action-btn-secondary" onClick={onExpand} style={{ marginTop: '0.5rem', width: '100%', justifyContent: 'center' }}>
+            View Details
+          </button>
         </div>
       ) : (
-        <div className="card-wip">🚧 Work in progress — check back soon.</div>
+        <div className="card-actions-wrapper">
+          <button className="action-btn action-btn-secondary" onClick={onExpand} style={{ width: '100%', justifyContent: 'center', marginBottom: '0.5rem' }}>
+            View full details ↗
+          </button>
+          
+          {(hasDemo || hasRepo) ? (
+            <div className="card-actions">
+              {hasDemo && (
+                <a href={project.demoLink} target="_blank" rel="noopener noreferrer" className="action-btn action-btn-primary" onClick={e => e.stopPropagation()}>
+                  Demo
+                </a>
+              )}
+              {hasRepo && (
+                <a href={project.repoLink} target="_blank" rel="noopener noreferrer" className="action-btn action-btn-secondary" onClick={e => e.stopPropagation()}>
+                  Code
+                </a>
+              )}
+            </div>
+          ) : (
+            <div className="card-wip">🚧 Work in progress — check back soon.</div>
+          )}
+        </div>
       )}
     </div>
   );
